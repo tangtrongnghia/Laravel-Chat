@@ -17,6 +17,9 @@ indent_size = 2
 [docker-compose.yml]
 indent_size = 4
 
-[*.{vue,scss,ts,cjs}]
-indent_style = space
+[*.{vue,scss,ts,cjs,js}]
 indent_size = 2
+
+[tailwind.config.js]
+[vite.config.js]
+indent_size = 4
