@@ -70,43 +70,48 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { Head } from '@inertiajs/vue3'
-import { onBeforeMount, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import ChatItem from './partials/ChatItem.vue'
+import axios from 'axios'
 
-const message = ref('')
-const list_messages = ref([])
-
-onBeforeMount(() => {
-  loadMessage()
+const props = defineProps({
+  messages: {
+    type: Array,
+    default: () => [],
+  },
 })
 
-async function loadMessage() {
-  // Fake data for demonstration
-  list_messages.value = [
-    {
-      id: 1,
-      user: { id: 1, name: 'Alice' },
-      message: 'Hello, how are you?',
-      created_at: '2024-12-11 08:30:00',
-    },
-    {
-      id: 2,
-      user: { id: 2, name: 'Bob' },
-      message: 'I am good, thanks! How about you?',
-      created_at: '2024-12-11 08:31:00',
-    },
-    {
-      id: 3,
-      user: { id: 1, name: 'Alice' },
-      message: 'Doing great! What are you up to?',
-      created_at: '2024-12-11 08:32:00',
-    },
-    {
-      id: 4,
-      user: { id: 3, name: 'Charlie' },
-      message: 'Hey everyone!',
-      created_at: '2024-12-11 08:33:00',
-    },
-  ]
+onMounted(() => {
+  window.Echo.channel('messages').listen('MessagePosted', data => {
+    if (data.sokcet_id != window.Echo.socketId()) {
+      const message = data.message
+      console.log(message)
+      list_messages.value.push(message)
+    }
+  })
+})
+
+const list_messages = ref(props.messages)
+const message = ref('')
+const isSending = ref(false)
+
+async function sendMessage() {
+  if (!message.value.length || isSending.value) return
+
+  isSending.value = true
+
+  try {
+    const response = await axios.post('/chat', {
+      message: message.value,
+      socket_id: window.Echo.socketId(),
+    })
+
+    list_messages.value.push(response.data.message)
+    message.value = ''
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isSending.value = false
+  }
 }
 </script>
