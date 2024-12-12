@@ -5,10 +5,9 @@
 - **Docker**: Laravel Sail
 - **Frontend**: Vue 3
 - **SPA Routing**: Inertia.js
-- **Performance**: Laravel Octane
+- **Performance**: Laravel Octane - PHP JIT
 - **Real-time**: Laravel Reverb & Echo
 - PHP 8.3+
-- PHP JIT
 - Composer
 - Node.js 20+
 - Mysql 8
